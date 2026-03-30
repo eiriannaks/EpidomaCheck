@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EpidomaCheck - Με την Riri AI 🐱</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --main-purple: #6a0dad; --dark-purple: #4b0082; }
+        
+        body {
+            background-color: #F3F0F7;
+            color: #1a1a1a;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode { background-color: #0f172a; color: #f8fafc; }
+        .dark-mode .sidebar { background-color: #1e293b; border-right-color: #334155; }
+        .dark-mode .benefit-card { background-color: #1e293b; border-left-color: #a855f7; color: #f8fafc; }
+        .dark-mode input, .dark-mode select { background-color: #334155 !important; color: white !important; border-color: #475569 !important; }
+        .dark-mode .bg-white { background-color: #1e293b !important; color: white !important; }
+        .dark-mode .text-gray-800, .dark-mode .text-black, .dark-mode .text-gray-700, .dark-mode .home-text { color: #f1f5f9 !important; }
+        .dark-mode .text-gray-600 { color: #cbd5e1 !important; }
+        .dark-mode .text-gray-500 { color: #94a3b8 !important; }
+        .dark-mode .bg-purple-50 { background-color: #2e1065 !important; }
+        .dark-mode .bg-[#F3F0F7] { background-color: #0f172a !important; border-color: #334155 !important; }
+        .dark-mode .riri-bubble { background-color: #1e293b; color: white; border-color: #6a0dad; }
+
+        .sidebar { 
+            background-color: #EAE6F2; 
+            border-right: 2px solid #D1C4E9; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 320px;
+        }
+        .sidebar.collapsed { margin-left: -320px; }
+        .header-gradient { background: linear-gradient(135deg, #6a0dad 0%, #4b0082 100%); }
+        
+        .benefit-card {
+            background: white;
+            border-left: 6px solid #6a0dad;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+        .benefit-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(106, 13, 173, 0.15); }
+        .upcoming-dim { opacity: 0.5; filter: grayscale(30%); }
+
+        input, select { border: 1px solid #D1C4E9 !important; color: black !important; background-color: white !important; font-weight: 600; }
+        label { color: #6a0dad !important; font-weight: 800; }
+        .hidden { display: none !important; }
+        
+        /* Badges */
+        .badge-countdown {
+            position: absolute; top: 1rem; right: 1rem;
+            padding: 0.35rem 0.85rem; border-radius: 9999px;
+            font-size: 0.75rem; font-weight: 900; text-transform: uppercase;
+            z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        .badge-opening { background-color: #d1fae5; color: #059669; border: 1px solid #10b981; }
+        .badge-closing { background-color: #fee2e2; color: #dc2626; border: 1px solid #ef4444; }
+        .badge-closed { background-color: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; }
+
+        /* Riri AI UI */
+        .chat-widget {
+            position: fixed; bottom: 100px; right: 20px; width: 350px; height: 500px;
+            background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000; display: flex; flex-direction: column; overflow: hidden; border: 2px solid #6a0dad;
+        }
+        .chat-header { background: #6a0dad; color: white; padding: 15px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 15px; max-width: 85%; font-size: 14px; }
+        .msg-ai { background: #EAE6F2; color: #1a1a1a; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg-user { background: #6a0dad; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        
+        .chat-toggle-container {
+            position: fixed; bottom: 25px; right: 20px; 
+            display: flex; align-items: center; gap: 10px; z-index: 1001;
+        }
+        .riri-bubble {
+            background: white; color: #6a0dad; padding: 8px 14px; border-radius: 18px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid #6a0dad;
+            font-weight: 800; font-size: 12px; position: relative;
+            animation: pulseBubble 2s infinite; cursor: pointer; white-space: nowrap;
+        }
+        .riri-bubble::after {
+            content: ''; position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+            border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 10px solid #6a0dad;
+        }
+        .chat-toggle {
+            width: 60px; height: 60px; background: #6a0dad; color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 5px 20px rgba(106, 13, 173, 0.4); font-size: 36px;
+            transition: transform 0.3s;
+        }
+        .chat-toggle:hover { transform: scale(1.1); }
+
+        @keyframes pulseBubble {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #6a0dad; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #incomeError { font-size: 10px; font-weight: 900; color: #ef4444; margin-top: 2px; display: none; }
+
+        @media print {
+            .sidebar, .chat-toggle-container, .chat-widget, .header-gradient, .export-btn-group, .mt-auto, .top-nav, .print-hidden, .persistent-report { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .benefit-card { border: 1px solid #ccc !important; break-inside: avoid; margin-bottom: 20px; opacity: 1 !important; }
+            .flex-1 { padding: 0 !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <div id="mainSidebar" class="sidebar h-screen overflow-y-auto p-6 space-y-6 flex-shrink-0 z-20 shadow-2xl">
+        <div class="flex items-center justify-between p-3 bg-white/50 rounded-2xl border border-purple-200">
+            <span class="text-[10px] font-black uppercase text-[#6a0dad]"><i class="fas fa-moon mr-1"></i> Dark Mode</span>
+            <button onclick="toggleDarkMode()" id="darkModeToggle" class="w-12 h-6 bg-gray-300 rounded-full relative transition-all">
+                <div id="toggleCircle" class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-all"></div>
+            </button>
+        </div>
+
+        <button id="homeBtn" onclick="showView('home')" class="w-full bg-white border-2 border-[#6a0dad] text-[#6a0dad] font-bold py-3 rounded-2xl hover:bg-[#6a0dad] hover:text-white transition-all shadow-sm active:scale-95">
+            <i class="fas fa-home mr-2"></i> ΕΠΙΣΤΡΟΦΗ ΣΤΗΝ ΑΡΧΙΚΗ
+        </button>
+
+        <div class="pt-6 border-t border-[#D1C4E9]">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-[#6a0dad] font-black uppercase tracking-widest text-xs flex items-center">
+                    <span class="bg-[#6a0dad] text-white p-1 rounded-md mr-2"><i class="fas fa-user-check"></i></span> ΧΑΡΑΚΤΗΡΙΣΤΙΚΑ ΠΟΛΙΤΗ
+                </h3>
+                <button onclick="resetFilters()" class="text-[10px] font-black text-red-500 hover:underline uppercase tracking-tighter">Επαναφορα</button>
+            </div>
+            
+            <div class="space-y-4 text-black">
+                <div>
+                    <label class="block text-[10px] mb-1 uppercase tracking-tighter">Φύλο</label>
+                    <select id="gender" class="w-full p-2 rounded-xl outline-none">
+                        <option value="female">Γυναίκα</option>
+                        <option value="male">Άνδρας</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] mb-1 uppercase tracking-tighter">Εισόδημα (€)</label>
+                        <input type="text" id="income" value="0" placeholder="π.χ. 12.000" class="w-full p-2 rounded-xl outline-none" oninput="validateIncome()">
+                        <span id="incomeError">ΜΗ ΕΓΚΥΡΟ</span>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] mb-1 uppercase tracking-tighter">Ηλικία</label>
+                        <input type="number" id="age" value="30" class="w-full p-2 rounded-xl outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] mb-1 uppercase tracking-tighter">Μέλη Νοικ.</label>
+                        <input type="number" id="family_members" value="1" min="1" class="w-full p-2 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] mb-1 uppercase tracking-tighter">Παιδιά < 18</label>
+                        <input type="number" id="kids_count" value="0" min="0" class="w-full p-2 rounded-xl outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] mb-1 uppercase tracking-tighter">Εργασιακή Κατάσταση</label>
+                    <select id="job" class="w-full p-2 rounded-xl outline-none text-xs">
+                        <option value="private">Ιδιωτικός Υπάλληλος</option>
+                        <option value="public">Δημόσιος Υπάλληλος</option>
+                        <option value="unemployed">Άνεργος (ΔΥΠΑ)</option>
+                        <option value="self_employed">Ελεύθερος Επαγγελματίας</option>
+                        <option value="student">Φοιτητής</option>
+                        <option value="pensioner">Συνταξιούχος</option>
+                    </select>
+                </div>
+                
+                <div class="bg-white/40 p-4 rounded-2xl border border-purple-200 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="text-[10px] uppercase font-black">Ποσοστό ΑμεΑ:</label>
+                        <input type="number" id="amea" value="0" min="0" max="100" class="w-16 p-1 text-center text-sm rounded-lg">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="island" class="accent-[#6a0dad]">
+                        <label for="island" class="text-[10px] uppercase font-black cursor-pointer">Κάτοικος Νησιού</label>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="mountain" class="accent-[#6a0dad]">
+                        <label for="mountain" class="text-[10px] uppercase font-black cursor-pointer">Ορεινή Περιοχή</label>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="minority" class="accent-[#6a0dad]">
+                        <label for="minority" class="text-[10px] uppercase font-black cursor-pointer">Μειονότητα Αλβανίας</label>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <div class="flex items-center space-x-2 py-2">
+                        <input type="checkbox" id="onlyNow" class="w-5 h-5 rounded accent-[#6a0dad]">
+                        <label for="onlyNow" class="text-[10px] uppercase text-purple-800 font-black cursor-pointer dark:text-purple-400">ΜΟΝΟ ΤΩΡΑ ΔΙΑΘΕΣΙΜΑ</label>
+                    </div>
+                </div>
+                <button id="runBtn" onclick="runCheck()" class="w-full header-gradient text-white font-black py-4 rounded-2xl shadow-xl hover:brightness-110 transition-all active:scale-95 mt-2 uppercase tracking-widest text-xs">
+                    <i class="fas fa-search mr-1"></i> Έλεγχος Επιδομάτων
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN AREA -->
+    <div class="flex-1 h-screen overflow-y-auto p-4 md:p-10 flex flex-col relative" id="printArea">
+        
+        <div class="flex justify-between items-center mb-8 sticky top-0 bg-transparent z-10 top-nav print:hidden">
+            <button onclick="toggleSidebar()" class="bg-[#6a0dad] text-white px-6 py-3 rounded-xl font-black uppercase text-xs shadow-lg flex items-center gap-3">
+                <i class="fas fa-sliders-h"></i> ΧΑΡΑΚΤΗΡΙΣΤΙΚΑ ΠΟΛΙΤΗ - ΦΙΛΤΡΑ
+            </button>
+        </div>
+
+        <div onclick="showView('home')" class="header-gradient text-white p-10 rounded-[2.5rem] shadow-2xl mb-12 flex flex-col sm:flex-row items-center gap-8 relative overflow-hidden cursor-pointer shrink-0 print:hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10 text-9xl transform rotate-12">💵</div>
+            <div class="text-7xl bg-white/20 p-6 rounded-3xl backdrop-blur-md">💸</div>
+            <div class="text-center sm:text-left relative z-10">
+                <h1 class="text-3xl md:text-5xl font-black tracking-tight uppercase">Καλωσήρθες στο EpidomaCheck!</h1>
+                <p class="text-xl opacity-80 mt-3 font-medium">Ο πιο εύκολος τρόπος για να μάθεις τα επιδόματα που δικαιούσαι.</p>
+            </div>
+        </div>
+
+        <!-- VIEW: HOME -->
+        <div id="homeView" class="space-y-12 fade-in">
+            <div class="text-center py-10 space-y-6">
+                <h2 class="text-4xl font-black text-black dark:text-black tracking-tight home-text">Ανακάλυψε ποια επιδόματά είναι για σένα άμεσα!</h2>
+                <p class="text-2xl max-w-4xl mx-auto text-black dark:text-black-300 leading-relaxed font-semibold opacity-90 home-text">
+                    Συμπλήρωσε τα στοιχεία σου για πιο ακριβή και γρήγορο έλεγχο ή περιηγήσου σε όλα τα επιδόματα παρακάτω.
+                </p>
+            </div>
+
+            <div>
+                <h3 class="text-3xl font-black mb-10 flex items-center uppercase tracking-tighter text-black dark:text-white">
+                    <span class="w-16 h-2 text-white bg-[#6a0dad] mr-5 rounded-full"></span> 
+                    ΟΛΑ ΤΑ ΕΠΙΔΟΜΑΤΑ (Κάντε κλικ)
+                </h3>
+                <div id="allBenefitsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10"></div>
+            </div>
+        </div>
+
+        <!-- VIEW: RESULTS -->
+        <div id="resultsView" class="hidden space-y-10 fade-in text-black">
+            <div class="export-section bg-white p-8 rounded-[2.5rem] shadow-sm border border-purple-100 flex flex-col items-center justify-center space-y-6 print:hidden dark:bg-slate-800 dark:border-slate-700">
+                <div class="flex flex-wrap justify-center gap-6">
+                    <button onclick="window.print()" class="bg-red-500 text-white px-10 py-4 rounded-2xl font-black uppercase flex items-center gap-3 hover:bg-red-600 shadow-lg active:scale-95 transition-all">
+                        <i class="fas fa-file-pdf"></i> Αποθηκευση ως PDF
+                    </button>
+                    <button onclick="window.print()" class="bg-blue-500 text-white px-10 py-4 rounded-2xl font-black uppercase flex items-center gap-3 hover:bg-blue-600 shadow-lg active:scale-95 transition-all">
+                        <i class="fas fa-print"></i> Εκτυπωση
+                    </button>
+                </div>
+                <h3 class="text-2xl font-black text-[#6a0dad] dark:text-purple-400 text-center uppercase tracking-tight">Κράτα τα μαζεμένα για να μην τα ξεχάσεις!</h3>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-3xl shadow-sm text-center border-b-8 border-[#6a0dad] dark:bg-slate-800">
+                    <p class="text-[10px] font-black uppercase tracking-widest mb-2 text-gray-500 dark:text-gray-400 opacity-60">Επιλέξιμα</p>
+                    <h3 id="mCount" class="text-5xl font-black text-[#6a0dad] dark:text-purple-400">0</h3>
+                </div>
+                <div class="bg-white p-8 rounded-3xl shadow-sm text-center border-b-8 border-[#6a0dad] dark:bg-slate-800">
+                    <p class="text-[10px] font-black uppercase tracking-widest mb-2 text-gray-500 dark:text-gray-400 opacity-60">Ετήσιο Όφελος</p>
+                    <h3 id="mValue" class="text-5xl font-black text-[#6a0dad] dark:text-purple-400">€0</h3>
+                </div>
+                <div class="bg-white p-8 rounded-3xl shadow-sm text-center border-b-8 border-[#6a0dad] dark:bg-slate-800">
+                    <p class="text-[10px] font-black uppercase tracking-widest mb-2 text-gray-500 dark:text-gray-400 opacity-60">Πληρότητα</p>
+                    <h3 id="mRate" class="text-5xl font-black text-[#6a0dad] dark:text-purple-400">0%</h3>
+                </div>
+            </div>
+            <div id="benefitsList" class="space-y-8"></div>
+        </div>
+
+        <!-- PERSISTENT REPORT SECTION -->
+        <div class="persistent-report mt-20 pt-10 border-t border-purple-200 dark:border-slate-700">
+            <div class="max-w-2xl mx-auto bg-white p-8 rounded-[3rem] shadow-xl border border-orange-100 text-center dark:bg-slate-800 dark:border-slate-700">
+                <div class="text-5xl text-orange-400 mb-4">🐱</div>
+                <h2 class="text-2xl font-black uppercase text-black dark:text-white mb-2">Αυτόματη Αναγγελία Επιδομάτων</h2>
+                <p class="text-gray-500 dark:text-gray-400 font-semibold mb-6 text-base">Βάλε το link από το gov.gr και η Riri AI θα το διαβάσει αυτόματα.</p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="url" id="reportUrl" placeholder="https://www.gov.gr/..." class="flex-1 p-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-orange-400 outline-none text-black dark:bg-slate-900 dark:text-white">
+                    <button onclick="processReport()" class="bg-orange-500 text-white font-black px-8 py-4 rounded-2xl hover:bg-orange-600 transition shadow-lg uppercase text-sm active:scale-95">ΕΚΤΕΛΕΣΗ</button>
+                </div>
+                <div id="reportLoading" class="hidden flex flex-col items-center py-6">
+                    <div class="loader mb-4"></div>
+                    <p class="text-xs font-black text-orange-600 uppercase tracking-widest">Η Riri αναλύει το περιεχόμενο...</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="mt-auto text-center py-12 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
+            © 2026 EpidomaCheck • Created by [EAK] • Riri AI Assistant
+        </footer>
+    </div>
+
+    <!-- MODAL -->
+    <div id="benefitModal" class="hidden fixed inset-0 modal-overlay flex items-center justify-center p-4 text-black z-50">
+        <div class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden modal-content max-h-[90vh] flex flex-col dark:bg-slate-800">
+            <div class="header-gradient p-8 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-4">
+                    <span id="modalIcon" class="text-4xl bg-white/20 p-3 rounded-2xl"></span>
+                    <h2 id="modalTitle" class="text-2xl font-black uppercase text-white"></h2>
+                </div>
+                <button onclick="closeModal()" class="text-white/60 hover:text-white"><i class="fas fa-times text-2xl"></i></button>
+            </div>
+            <div class="p-8 overflow-y-auto space-y-6 text-black dark:text-white">
+                <div>
+                    <h4 class="text-[#6a0dad] font-black text-xs uppercase mb-2 dark:text-purple-400">Περιγραφή</h4>
+                    <p id="modalDesc" class="text-gray-700 leading-relaxed text-lg dark:text-gray-300"></p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-black dark:text-white">
+                    <div class="bg-purple-50 p-4 rounded-2xl border border-purple-100 dark:bg-slate-900/50 dark:border-slate-700">
+                        <h4 class="text-[#6a0dad] text-[10px] font-black uppercase dark:text-purple-400">Ποιον αφορά</h4>
+                        <p id="modalTarget" class="font-bold text-gray-800 dark:text-white"></p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 dark:bg-slate-900/50 dark:border-slate-700">
+                        <h4 class="text-blue-700 text-[10px] font-black uppercase dark:text-blue-400">Περίοδος Αιτήσεων</h4>
+                        <p id="modalPeriod" class="font-bold text-gray-800 dark:text-white"></p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-[#6a0dad] font-black text-xs uppercase mb-2 dark:text-purple-400">Δικαιολογητικά</h4>
+                    <p id="modalDocs" class="text-base text-gray-600 bg-gray-50 p-4 rounded-2xl border border-gray-100 dark:bg-slate-900 dark:text-gray-400 dark:border-slate-700"></p>
+                </div>
+                <div class="pt-4 border-t border-gray-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <span class="text-[10px] font-black text-gray-400 uppercase">Ποσό</span>
+                        <p id="modalAmount" class="text-3xl font-black text-gray-800 dark:text-white"></p>
+                    </div>
+                    <a id="modalGovLink" href="#" target="_blank" class="w-full sm:w-auto header-gradient text-white px-10 py-4 rounded-2xl font-black shadow-lg hover:scale-105 transition-all text-center uppercase">
+                        Μετάβαση στο GOV.GR <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIRI KITTEN HEAD CHAT TOGGLE -->
+    <div class="chat-toggle-container print-hidden">
+        <div class="riri-bubble" onclick="toggleChat()">
+            Είμαι η Riri, αν θες βοήθεια, ρώτα με!
+        </div>
+        <div id="ririToggle" class="chat-toggle" onclick="toggleChat()">
+            🐱
+        </div>
+    </div>
+
+    <div id="ririWidget" class="chat-widget hidden print-hidden">
+        <div class="chat-header"><span>🐱 Riri AI Assistant</span><button onclick="toggleChat()"><i class="fas fa-times"></i></button></div>
+        <div id="ririMessages" class="chat-messages text-black dark:bg-slate-900">
+            <div class="message msg-ai font-semibold text-purple-800 dark:text-purple-300">Γεια σας! Είμαι η Riri. Μπορώ να σας βοηθήσω με τα επιδόματα, τη σύνθεση της οικογένειάς σας ή την αναγγελία νέων;</div>
+        </div>
+        <div class="chat-input text-black p-4 border-t flex gap-2">
+            <input type="text" id="ririInput" placeholder="Ρωτήστε τη Riri..." class="flex-1 p-2 rounded-xl border focus:outline-none dark:bg-slate-700 dark:text-white dark:border-slate-600" onkeypress="if(event.key === 'Enter') sendRiriMessage()">
+            <button onclick="sendRiriMessage()" class="bg-[#6a0dad] text-white p-2 px-4 rounded-xl active:scale-95 transition-transform"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = ""; 
+
+        // UPDATED DATABASE WITH PURE GOV.GR LINKS
+        let benefitsDB = [
+            { id: 1, name: "Επίδομα Παιδιού (Α21)", icon: "👶", desc: "Οικονομική ενίσχυση για οικογένειες με εξαρτώμενα παιδιά.", amount: 840, incomeLimit: 15000, docs: "Πιστοποιητικό Οικ. Κατάστασης, AMKA", target: "Οικογένειες με παιδιά", period: "Φεβ-Δεκ", govUrl: "https://www.gov.gr/ipiresies/oikogeneia/paidia/epidoma-paidiou", status: "Active", genderReq: "female", ageMax: 50, needsKids: true },
+            { id: 2, name: "Επίδομα Ανεργίας", icon: "💼", desc: "Μηνιαία ενίσχυση για απολυμένους μισθωτούς.", amount: 510, incomeLimit: 999999, docs: "Καταγγελία σύμβασης, Κάρτα ανεργίας", target: "Απολυμένοι μισθωτοί", period: "Εντός 60 ημερών", govUrl: "https://www.gov.gr/ipiresies/ergasia-kai-asphalise/anergia/aitese-epidomatos-anergias", status: "Active", jobReq: ["unemployed"] },
+            { id: 3, name: "Ελάχιστο Εγγυημένο Εισόδημα", icon: "🤝", desc: "Πρόνοια για νοικοκυριά σε ακραία φτώχεια. Το όριο αυξάνεται με κάθε μέλος.", amount: 2400, incomeLimit: 5400, docs: "E1, Taxisnet", target: "Ευάλωτα νοικοκυριά", period: "Συνεχόμενα", govUrl: "https://www.gov.gr/ipiresies/ekpaideuse/phoitite-kai-spoudaste/elakhisto-egguemeno-eisodema", status: "Active", dynamicScale: true },
+            { id: 4, name: "Επίδομα Στέγασης", icon: "🏙️", desc: "Επιδότηση ενοικίου για κύρια κατοικία. Το ποσό και το όριο αυξάνονται βάσει μελών.", amount: 2100, incomeLimit: 7000, docs: "Ηλεκτρονικό μισθωτήριο", target: "Ενοικιαστές", period: "Κάθε 6 μήνες", govUrl: "https://www.gov.gr/ipiresies/oikogeneia/stegase/epidoma-stegases", status: "Active", dynamicScale: true },
+            { id: 5, name: "Επίδομα Γέννησης", icon: "🍼", desc: "Ενίσχυση για κάθε νέο παιδί που γεννιέται.", amount: 2400, incomeLimit: 40000, docs: "Ληξιαρχική πράξη γέννησης", target: "Νέες μητέρες", period: "Εντός 3 μηνών", govUrl: "https://www.gov.gr/ipiresies/oikogeneia/gennese/epidoma-genneses", status: "Active", genderReq: "female" },
+            { id: 6, name: "Επίδομα Μητρότητας (Ειδική Παροχή)", icon: "🤱", desc: "9μηνη ενίσχυση εργαζόμενων μητέρων.", amount: 7470, incomeLimit: 999999, docs: "Βεβαίωση εργοδότη", target: "Εργαζόμενες μητέρες", period: "Μετά τη λοχεία", govUrl: "https://www.gov.gr/ipiresies/ergasia-kai-asphalise/anergia/eidike-parokhe-prostasias-metrotetas", status: "Active", genderReq: "female", jobReq: ["private", "self_employed"] },
+            { id: 7, name: "Επίδομα Θέρμανσης", icon: "🔥", desc: "Ενίσχυση για αγορά καυσίμων θέρμανσης. Προσαυξάνεται για κάθε παιδί.", amount: 800, incomeLimit: 16000, docs: "Αριθμός παροχής", target: "Ιδιοκτήτες/Ενοικιαστές", period: "Οκτ-Ιαν", govUrl: "https://www.gov.gr/ipiresies/oikogeneia/stegase/epidoma-thermanses", status: "Active", endDate: "2026-04-30", dynamicScale: true },
+            { id: 8, name: "Youth Pass", icon: "🎫", desc: "Ενίσχυση 150€ για νέους 18-19 ετών.", amount: 150, incomeLimit: 999999, docs: "Taxisnet", target: "Νέοι 18-19 ετών", period: "Απρίλιος", govUrl: "https://www.gov.gr/ipiresies/ekpaideuse/psephiakes-dexiotetes/youth-pass", status: "Upcoming", ageMin: 18, ageMax: 19 },
+            { id: 9, name: "Μεταφορικό Ισοδύναμο", icon: "🚢", desc: "Επιστροφή κόστους εισιτηρίων νησιωτών.", amount: 300, incomeLimit: 999999, docs: "Κωδικός MAN", target: "Μόνιμοι κάτοικοι νησιών", period: "Συνεχόμενα", govUrl: "https://www.gov.gr/ipiresies/polites-kai-kathemerinoteta/metakineseis/metaphoriko-isodunamo", status: "Active", islandOnly: true },
+            { id: 10, name: "Στεγαστικό Επίδομα ΣΑΕΚ", icon: "🎓", desc: "Ετήσια ενίσχυση για σπουδαστές Δημόσιων ΣΑΕΚ.", amount: 1500, incomeLimit: 30000, docs: "Βεβαίωση Σπουδών", target: "Σπουδαστές ΣΑΕΚ", period: "Σεπτέμβριος", govUrl: "https://www.gov.gr/ipiresies/ekpaideuse/phoitite-kai-spoudaste/stegastiko-epidoma-saek", status: "Active", jobReq: ["student"] },
+            { id: 11, name: "Ενίσχυση Μειονότητας Αλβανίας", icon: "🇦🇱", desc: "Επίδομα αλληλεγγύης για ανασφάλιστους υπερήλικες της μειονότητας.", amount: 399, incomeLimit: 5000, docs: "Βεβαίωση ομογενούς", target: "Ομογενείς από Αλβανία", period: "Μηνιαία", govUrl: "https://www.gov.gr/ipiresies/oikogeneia/epidomata/minority-pension", status: "Active", minorityOnly: true },
+            { id: 12, name: "ΚΟΤ", icon: "⚡", desc: "Κοινωνικό Οικιακό Τιμολόγιο για έκπτωση στο ρεύμα.", amount: 400, incomeLimit: 9000, docs: "Αριθμός παροχής", target: "Ευάλωτοι", period: "Όλο το χρόνο", govUrl: "https://www.gov.gr/ipiresies/oikogeneia/stegase/koinoniko-oikiako-timologio-kot", status: "Active", dynamicScale: true },
+            { id: 13, name: "Βιβλιοπωλεία (ΔΥΠΑ)", icon: "📚", desc: "Επιταγές για αγορά βιβλίων.", amount: 50, incomeLimit: 30000, docs: "Κωδικοί Taxisnet", target: "Εργαζόμενοι/Άνεργοι", period: "Καλοκαίρι", govUrl: "https://www.gov.gr/ipiresies/ergasia-kai-asphalise/epidomata-kai-allos-draseis/koinonikos-toyrismos", status: "Upcoming" },
+            { id: 14, name: "Επίδομα ΑμεΑ (Πρόνοια)", icon: "♿", desc: "Μηνιαία ενίσχυση βάσει ποσοστού αναπηρίας.", amount: 4800, incomeLimit: 999999, docs: "ΚΕΠΑ", target: "ΑμεΑ 67%+", period: "Μηνιαία", govUrl: "https://www.gov.gr/ipiresies/ugeia-kai-pronoia/anapiria/atoma-me-anapiria-provoia", status: "Active", ameaReq: 67 },
+            { id: 15, name: "Βοήθημα Ανεργίας Ελεύθερων Επαγγελματιών", icon: "💼", desc: "Βοήθημα για αυτοτελώς απασχολούμενους.", amount: 510, incomeLimit: 30000, docs: "Διακοπή ΔΟΥ", target: "Ελ. Επαγγελματίες", period: "6 μήνες", govUrl: "https://www.gov.gr/ipiresies/ergasia-kai-asphalise/anergia/aitese-boethematos-anergias-autotelos-kai-anexartetos-apas kholoumenon", status: "Active", jobReq: ["self_employed"] },
+            { id: 16, name: "ΔΗΛΟΣ 365", icon: "📱", desc: "Πύλη ψηφιακών υπηρεσιών ΟΠΕΚΑ.", amount: 0, incomeLimit: 999999, docs: "Taxisnet", target: "Όλοι", period: "Συνεχόμενα", govUrl: "https://www.gov.gr/ipiresies/ergasia-kai-asphalise/epidomata-kai-allos-draseis/delos365", status: "Active" },
+            { id: 17, name: "Επίδομα Αναδοχής", icon: "🤝", desc: "Στήριξη για αναδόχους γονείς.", amount: 4500, incomeLimit: 999999, docs: "Σύμβαση αναδοχής", target: "Ανάδοχοι γονείς", period: "Μηνιαία", govUrl: "https://www.gov.gr/ipiresies/oikogeneia/paidia/epidoma-anadokhes", status: "Active" },
+            { id: 18, name: "Εισοδηματική Ενίσχυση Ορεινών", icon: "🏔️", desc: "Ενίσχυση για κατοίκους μειονεκτικών περιοχών.", amount: 600, incomeLimit: 4700, docs: "Βεβαίωση Δήμου", target: "Ορεινοί κάτοικοι", period: "Σεπτέμβριος", govUrl: "https://www.gov.gr/ipiresies/oikogeneia/epidomata/eisodimatiki-enishysi-oreinon-meionektikon-periochon", status: "Active", mountainOnly: true },
+            { id: 19, name: "Βεβαίωση Οικογενειακών Επιδομάτων", icon: "📄", desc: "Έκδοση βεβαίωσης για φορολογική χρήση (Α21).", amount: 0, incomeLimit: 999999, docs: "Taxisnet", target: "Δικαιούχοι Α21", period: "Όλο το χρόνο", govUrl: "https://www.gov.gr/ipiresies/oikogeneia/epidomata/bebaioseis-oikogeneiakon-epidomaton", status: "Active" },
+            { id: 20, name: "Αναγγελία Άφιξης σε Κατάλυμα", icon: "🏨", desc: "Υπηρεσία δήλωσης διαμονής για τουριστικούς σκοπούς.", amount: 0, incomeLimit: 999999, docs: "Taxisnet", target: "Τουριστικά Καταλύματα", period: "Κατά την άφιξη", govUrl: "https://www.gov.gr/ipiresies/polites-kai-kathemerinoteta/metakineseis/anaggelia-aphixis-se-kataluma", status: "Active" }
+        ];
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const circle = document.getElementById('toggleCircle');
+            const bg = document.getElementById('darkModeToggle');
+            body.classList.toggle('dark-mode');
+            if(body.classList.contains('dark-mode')) {
+                circle.style.left = '26px'; bg.style.backgroundColor = '#6a0dad';
+            } else {
+                circle.style.left = '2px'; bg.style.backgroundColor = '#d1d5db';
+            }
+        }
+
+        function toggleSidebar() { document.getElementById('mainSidebar').classList.toggle('collapsed'); }
+        
+        function resetFilters() {
+            document.getElementById('gender').value = 'female';
+            document.getElementById('income').value = '0';
+            document.getElementById('age').value = '30';
+            document.getElementById('family_members').value = '1';
+            document.getElementById('kids_count').value = '0';
+            document.getElementById('job').value = 'private';
+            document.getElementById('amea').value = '0';
+            document.querySelectorAll('input[type="checkbox"]').forEach(i => i.checked = false);
+            validateIncome();
+        }
+
+        function getIncomeValue() {
+            let val = document.getElementById('income').value.trim();
+            if (!val) return 0;
+            let clean = val.replace(',', '.');
+            let parts = clean.split('.');
+            if (parts.length > 1 && parts[parts.length - 1].length === 3) {
+                clean = clean.split('.').join('');
+            }
+            return parseFloat(clean) || 0;
+        }
+
+        function validateIncome() {
+            const income = getIncomeValue();
+            const err = document.getElementById('incomeError');
+            const btn = document.getElementById('runBtn');
+            if (income < 0) {
+                err.style.display = 'block'; btn.disabled = true; btn.style.opacity = '0.5';
+            } else {
+                err.style.display = 'none'; btn.disabled = false; btn.style.opacity = '1';
+            }
+        }
+
+        function getStatusInfo(b) {
+            const today = new Date();
+            if (b.status === "Upcoming") return { status: "upcoming", label: "Αναμένεται", badge: "badge-opening" };
+            if (b.endDate && today > new Date(b.endDate)) return { status: "closed", label: "Κλειστό", badge: "badge-closed" };
+            return { status: "open", label: "Ανοιχτό", badge: "badge-opening" };
+        }
+
+        function showView(viewId) {
+            ['homeView', 'resultsView'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(viewId + 'View').classList.remove('hidden');
+            const homeBtn = document.getElementById('homeBtn');
+            if (viewId === 'home') { homeBtn.disabled = true; homeBtn.classList.add('btn-home-disabled'); renderAllBenefits(); }
+            else { homeBtn.disabled = false; homeBtn.classList.remove('btn-home-disabled'); }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderAllBenefits() {
+            const grid = document.getElementById('allBenefitsGrid');
+            grid.innerHTML = '';
+            benefitsDB.forEach(b => {
+                const sInfo = getStatusInfo(b);
+                grid.innerHTML += `
+                    <div onclick="openModal(${b.id})" class="benefit-card p-10 border border-[#D1C4E9] flex flex-col group dark:border-slate-700 text-black dark:text-white">
+                        <div class="badge-countdown ${sInfo.badge}">${sInfo.label}</div>
+                        <div class="flex items-center gap-6 mb-6 mt-2">
+                            <span class="text-6xl group-hover:scale-110 transition-transform">${b.icon}</span>
+                            <h4 class="font-black text-[#6a0dad] uppercase text-2xl leading-tight pr-20 dark:text-purple-400">${b.name}</h4>
+                        </div>
+                        <p class="text-xl text-gray-700 dark:text-gray-400 font-bold mb-8 line-clamp-3 leading-relaxed home-text">${b.desc}</p>
+                        <div class="flex justify-between items-center mt-auto pt-6 border-t border-gray-50 dark:border-slate-700">
+                            <span class="text-base font-black text-gray-400 group-hover:text-[#6a0dad] transition-colors uppercase tracking-widest">Λεπτομέρειες <i class="fas fa-arrow-right ml-2 text-lg"></i></span>
+                            <span class="text-2xl font-black">${b.amount > 0 ? '€'+b.amount.toLocaleString() : '---'}</span>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function runCheck() {
+            const f = {
+                gender: document.getElementById('gender').value,
+                income: getIncomeValue(),
+                age: parseInt(document.getElementById('age').value) || 30,
+                familyMembers: parseInt(document.getElementById('family_members').value) || 1,
+                kidsCount: parseInt(document.getElementById('kids_count').value) || 0,
+                job: document.getElementById('job').value,
+                amea: parseInt(document.getElementById('amea').value) || 0,
+                island: document.getElementById('island').checked,
+                mountain: document.getElementById('mountain').checked,
+                minority: document.getElementById('minority').checked,
+                onlyNow: document.getElementById('onlyNow').checked
+            };
+
+            let eligible = benefitsDB.filter(b => {
+                if (b.genderReq && f.gender !== b.genderReq) return false;
+                if (b.id === 1 && (f.age > 50 || f.kidsCount < 1)) return false;
+                if (b.needsKids && f.kidsCount < 1) return false;
+                if (b.ageMax && f.age > b.ageMax) return false;
+                if (b.ameaReq && f.amea < b.ameaReq) return false;
+                if (b.islandOnly && !f.island) return false;
+                if (b.mountainOnly && !f.mountain) return false;
+                if (b.minorityOnly && !f.minority) return false;
+                if (b.jobReq && !b.jobReq.includes(f.job)) return false;
+
+                let actualLimit = b.incomeLimit || 999999;
+                if (b.dynamicScale) {
+                    if (b.id === 4) actualLimit = 7000 + (f.familyMembers - 1) * 3500;
+                    if (b.id === 12) actualLimit = 9000 + (f.familyMembers - 1) * 4500;
+                    if (b.id === 3) actualLimit = 5400 + (f.familyMembers - 1) * 2700 + (f.kidsCount * 1350);
+                    if (b.id === 7) actualLimit = 16000 + (f.kidsCount * 3000);
+                }
+                
+                if (f.income > actualLimit) return false;
+                if (f.onlyNow && getStatusInfo(b).status !== "open") return false;
+                return true;
+            });
+
+            showView('results');
+            document.getElementById('mCount').innerText = eligible.length;
+            const totalVal = eligible.reduce((acc, b) => acc + (b.amount || 0), 0);
+            document.getElementById('mValue').innerText = `€${totalVal.toLocaleString()}`;
+            document.getElementById('mRate').innerText = `${Math.round((eligible.length / benefitsDB.length) * 100)}%`;
+
+            const list = document.getElementById('benefitsList');
+            list.innerHTML = '';
+            eligible.forEach(b => {
+                const sInfo = getStatusInfo(b);
+                list.innerHTML += `
+                    <div onclick="openModal(${b.id})" class="benefit-card p-10 fade-in group ${sInfo.status === 'upcoming' ? 'upcoming-dim' : ''} dark:border-slate-700 text-black dark:text-white">
+                        <div class="badge-countdown ${sInfo.badge}">${sInfo.label}</div>
+                        <div class="flex flex-col sm:flex-row justify-between items-start gap-8">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-5 mb-5 mt-2">
+                                    <span class="text-6xl group-hover:rotate-12 transition-transform">${b.icon}</span>
+                                    <h3 class="text-3xl font-black text-black dark:text-purple-400 uppercase tracking-tight">${b.name}</h3>
+                                </div>
+                                <p class="text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-semibold mb-6">${b.desc}</p>
+                                <span class="text-xs font-black bg-green-50 text-green-600 px-4 py-2 rounded-full border border-green-100 uppercase dark:bg-green-900/30 dark:text-green-400">Πληρείτε τα κριτήρια</span>
+                            </div>
+                            <div class="bg-[#F3F0F7] p-8 rounded-[2.5rem] border-2 border-[#D1C4E9] text-center min-w-[180px] shadow-inner dark:bg-slate-900 dark:border-slate-700">
+                                <p class="text-4xl font-black text-black dark:text-white">${b.amount > 0 ? '€'+b.amount.toLocaleString() : '---'}</p>
+                                <span class="text-xs font-black opacity-40 uppercase tracking-widest mt-1 block">ΠΟΣΟ</span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function processReport(externalUrl = null) {
+            const rawUrl = externalUrl || document.getElementById('reportUrl').value.trim();
+            if(!rawUrl.includes('gov.gr')) return alert("Εισάγετε έγκυρο gov.gr link");
+            
+            // Clean URL for matching (ignore www, trailing slashes, etc.)
+            const cleanUrl = rawUrl.replace('www.', '').split('?')[0].replace(/\/$/, "");
+            
+            const existing = benefitsDB.find(b => {
+                const dbClean = b.govUrl.replace('www.', '').split('?')[0].replace(/\/$/, "");
+                return cleanUrl.includes(dbClean) || dbClean.includes(cleanUrl);
+            });
+            
+            const loader = document.getElementById('reportLoading');
+            loader.classList.remove('hidden');
+
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                if (existing) {
+                    alert(`Η Riri AI εντόπισε ότι το επίδομα αυτό υπάρχει ήδη στον κατάλογο! Μεταφέρεστε στο "${existing.name}".`);
+                    showView('home');
+                    openModal(existing.id);
+                } else {
+                    document.getElementById('reportUrl').value = '';
+                    alert("Η Riri AI έλαβε το link και το επεξεργάζεται. Θα προστεθεί σύντομα στη βάση μας!");
+                    showView('home');
+                }
+            }, 1500);
+        }
+
+        async function sendRiriMessage() {
+            const input = document.getElementById('ririInput');
+            const msg = input.value.trim(); if(!msg) return;
+            const container = document.getElementById('ririMessages');
+            container.innerHTML += `<div class="message msg-user bg-purple-600 text-white p-3 rounded-2xl self-end shadow-md">${msg}</div>`;
+            input.value = ''; container.scrollTop = container.scrollHeight;
+            
+            // Smart link detection in chat
+            const linkMatch = msg.match(/https?:\/\/[^\s]+/);
+            if (linkMatch && linkMatch[0].includes('gov.gr')) {
+                const loadMsg = document.createElement('div');
+                loadMsg.className = "message msg-ai italic font-semibold";
+                loadMsg.innerText = "Ελέγχω το link στο gov.gr αμέσως...";
+                container.appendChild(loadMsg);
+                setTimeout(() => { loadMsg.remove(); processReport(linkMatch[0]); }, 800);
+                return;
+            }
+
+            const load = document.createElement('div');
+            load.className = "message msg-ai italic dark:text-gray-400"; load.innerText = "Η Riri σκέφτεται..."; container.appendChild(load);
+
+            try {
+                const sys = `Your name is Riri. Expert on ALL Greek benefits. Use context: ${JSON.stringify(benefitsDB)}. Greek language only. Respond professionals, clearly. If user provides a link to gov.gr, tell them you'll check.`;
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: msg }] }], systemInstruction: { parts: [{ text: sys }] } })
+                });
+                const d = await res.json(); load.remove();
+                container.innerHTML += `<div class="message msg-ai bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl self-start font-medium text-black dark:text-white shadow-sm">${d.candidates[0].content.parts[0].text}</div>`;
+            } catch (e) { load.remove(); container.innerHTML += `<div class="message msg-ai italic text-red-500">Σφάλμα σύνδεσης.</div>`; }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function toggleChat() { document.getElementById('ririWidget').classList.toggle('hidden'); }
+        function closeModal() { document.getElementById('benefitModal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
+        
+        function openModal(id) {
+            const b = benefitsDB.find(x => x.id == id); if(!b) return;
+            document.getElementById('modalIcon').innerText = b.icon;
+            document.getElementById('modalTitle').innerText = b.name;
+            document.getElementById('modalDesc').innerText = b.desc;
+            document.getElementById('modalTarget').innerText = b.target;
+            document.getElementById('modalPeriod').innerText = b.period;
+            document.getElementById('modalDocs').innerText = b.docs;
+            document.getElementById('modalAmount').innerText = b.amount > 0 ? `€${b.amount.toLocaleString()}` : "Μεταβλητό";
+            document.getElementById('modalGovLink').href = b.govUrl;
+            document.getElementById('benefitModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            const card = document.querySelector(`[onclick="openModal(${id})"]`);
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        window.onload = () => { renderAllBenefits(); toggleSidebar(); }
+    </script>
+</body>
+</html>
