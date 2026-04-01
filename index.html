@@ -4,18 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SEO & Metadata -->
-    <title>EpidomaCheck - Βρες τι επιδόματα δικαιούσαι 2026</title>
-    <meta name="description" content="Ο πιο γρήγορος τρόπος να μάθεις για το επίδομα παιδιού, ενοικίου, ανεργίας ή ΕΕΕ. Έλεγχος σε 1 λεπτό με τον Μπάμπη AI.">
-    <meta name="keywords" content="επιδόματα 2026, οπεκα, δυπα, α21, επίδομα παιδιού, επίδομα ενοικίου, κοινωνικό τιμολόγιο">
-    
-    <!-- Open Graph (Για Viber, WhatsApp, Facebook) -->
-    <meta property="og:title" content="EpidomaCheck - The easy way to check!">
-    <meta property="og:description" content="Μάθε σε 1 λεπτό ποια επιδόματα δικαιούσαι βάσει του προφίλ σου.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/google/material-design-icons/master/png/action/account_balance_wallet/black/xxhdpi.png">
-    <meta property="og:type" content="website">
+    <!-- FAVICON: Money Icon 💵 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💵</text></svg>">
 
-    <!-- Fonts & Scripts -->
+    <!-- SEO & Metadata -->
+    <title>EpidomaCheck - The easy way to check!</title>
+    <meta name="description" content="Μάθε σε 1 λεπτό ποια επιδόματα δικαιούσαι βάσει του προφίλ σου. Έλεγχος με τον Μπάμπη AI.">
+    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -29,7 +24,7 @@
         window.db = null;
         window.auth = null;
         window.currentUser = null;
-        window.appId = typeof __app_id !== 'undefined' ? __app_id : 'epidoma-check-v85';
+        window.appId = typeof __app_id !== 'undefined' ? __app_id : 'epidoma-check-v93';
 
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "dummy-key", authDomain: "dummy-domain", projectId: "dummy-id", storageBucket: "dummy-bucket", messagingSenderId: "dummy-sender", appId: "dummy-app"
@@ -72,10 +67,24 @@
             scroll-behavior: smooth;
         }
 
+        /* DARK MODE - Πλήρης Έλεγχος */
         body.dark-mode { background-color: var(--primary-bg); color: #f1f5f9; }
+        .dark-mode header { background: #0f172a !important; border-bottom: 1px solid #1e293b; }
         .dark-mode .card { background-color: #0f172a; border-color: #1e293b; }
         .dark-mode .form-card { background-color: #0f172a; border-color: #1e293b; }
         .dark-mode input, .dark-mode select { background-color: #030712 !important; color: white !important; border-color: #334155 !important; }
+        .dark-mode #nav-all-link { color: white !important; }
+        .dark-mode .logo-text { color: white !important; }
+        .dark-mode label { color: #ffffff !important; }
+        .dark-mode .light-title, .dark-mode #resultsHeading, .dark-mode #reportTitle { color: #ffffff !important; }
+        .dark-mode .share-container { background-color: #0f172a !important; border-color: #1e293b !important; }
+        .dark-mode .share-text { color: #94a3b8 !important; }
+
+        /* LIGHT MODE */
+        header { background: white !important; color: var(--text-main) !important; border-bottom: 1px solid #e2e8f0; }
+        #nav-all-link { color: #0f172a !important; font-weight: 800; }
+        .logo-text { color: #0f172a !important; }
+        .light-title { color: #0f172a !important; }
 
         .altgage-gradient { background: linear-gradient(135deg, #030712 0%, #0f172a 100%); }
         
@@ -83,30 +92,43 @@
         .hidden-view { display: none !important; opacity: 0; transform: translateY(20px); }
 
         .card {
-            background: white; border: 1px solid #e2e8f0; border-radius: 20px; 
+            background: white; border: 1px solid #e2e8f0; border-radius: 24px; 
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; overflow: hidden; position: relative;
         }
         .card:hover { transform: translateY(-8px); border-color: var(--accent-green); box-shadow: 0 20px 40px rgba(16, 185, 129, 0.1); }
 
         .status-badge {
-            position: absolute; top: 10px; right: 10px; padding: 4px 12px;
-            font-size: 9px; font-weight: 800; border-radius: 6px; z-index: 10;
-            text-transform: uppercase;
+            position: absolute; top: 12px; right: 12px; padding: 4px 14px;
+            font-size: 9px; font-weight: 800; border-radius: 8px; z-index: 10;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
         .bg-open { color: #065f46; background: #d1fae5; border: 1px solid #059669; }
         .bg-soon { color: #92400e; background: #fef3c7; border: 1px solid #d97706; }
         .bg-urgent { color: #991b1b; background: #fee2e2; border: 1px solid #dc2626; }
 
-        /* Babis Bubble - BLUE */
-        .babis-bubble { 
-            background: var(--accent-blue); color: white; padding: 18px 26px; 
-            border-radius: 30px 30px 4px 30px; font-weight: 800; font-size: 15px; 
-            box-shadow: 0 15px 45px rgba(30, 64, 175, 0.4); animation: float 4s ease-in-out infinite;
-            max-width: 300px; line-height: 1.4;
+        /* BABIS CHAT WIDGET */
+        .chat-widget {
+            position: fixed; bottom: 120px; right: 40px; width: 350px; height: 500px;
+            background: white; border-radius: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            z-index: 2000; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0;
+            animation: slideIn 0.3s ease-out;
         }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .chat-header { background: var(--accent-blue); color: white; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid rgba(0,0,0,0.05); }
+        .chat-messages { padding: 20px; overflow-y: auto; flex: 1; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
+        .message-bubble { padding: 12px 18px; border-radius: 20px; max-width: 85%; font-size: 13px; line-height: 1.5; font-weight: 600; }
+        .msg-ai { background: white; color: #0f172a; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; }
+        .msg-user { background: var(--accent-blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
 
-        .chat-toggle { width: 75px; height: 75px; background: #030712; color: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 38px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s ease; }
+        .chat-toggle { width: 75px; height: 75px; background: #030712; color: white; border-radius: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 38px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s ease; }
         .chat-toggle:hover { transform: rotate(5deg) scale(1.1); }
+        
+        .babis-bubble { 
+            background: var(--accent-blue); color: white; padding: 16px 24px; 
+            border-radius: 25px 25px 4px 25px; font-weight: 800; font-size: 14px; 
+            box-shadow: 0 12px 35px rgba(30, 64, 175, 0.4); animation: float 4s ease-in-out infinite;
+            max-width: 280px; line-height: 1.4;
+        }
 
         .scroll-top-btn {
             position: fixed; bottom: 35px; left: 35px; width: 55px; height: 55px;
@@ -116,218 +138,161 @@
             transition: all 0.3s ease;
         }
 
-        .form-card { background: white; border: 1px solid #e2e8f0; padding: 3rem; border-radius: 32px; box-shadow: 0 30px 70px rgba(0,0,0,0.04); }
-        .custom-input { width: 100%; padding: 16px 20px; border: 2px solid #f1f5f9; border-radius: 16px; outline: none; font-weight: 600; background-color: #f8fafc; }
-        .custom-input:focus { border-color: var(--accent-green); background-color: #ffffff; }
+        .form-card { background: white; border: 1px solid #e2e8f0; padding: 3rem; border-radius: 32px; box-shadow: 0 30px 70px rgba(0,0,0,0.06); }
+        .custom-input { width: 100%; padding: 16px 22px; border: 2px solid #cbd5e1; border-radius: 16px; outline: none; font-weight: 700; background-color: #f8fafc; color: #0f172a; transition: all 0.2s; }
+        .custom-input:focus { border-color: var(--accent-green); background-color: #ffffff; box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.1); }
 
-        .hero-title { font-size: clamp(2.8rem, 8vw, 5rem); font-weight: 900; line-height: 0.95; letter-spacing: -0.06em; color: #0f172a !important; }
+        .hero-title { font-size: clamp(2.8rem, 8vw, 5rem); font-weight: 900; line-height: 0.95; letter-spacing: -0.06em; }
         
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-        
-        .share-btn { padding: 12px 24px; border-radius: 14px; font-weight: 800; display: flex; items-center gap: 10px; transition: all 0.3s ease; }
-        .btn-viber { background: #7360f2; color: white; }
-        .btn-whatsapp { background: #25d366; color: white; }
 
-        .card-benefit-name {
-            font-weight: 900; color: #0f172a; font-size: 0.95rem; text-transform: uppercase; line-height: 1.2; margin-bottom: 4px;
+        .sub-header-pill {
+            background: #1e293b; color: white !important; padding: 6px 16px; border-radius: 10px; font-size: 11px; font-weight: 900;
         }
-        .dark-mode .card-benefit-name { color: #ffffff; }
+
+        /* SHARING HUB STYLES */
+        .share-container {
+            background: white; border: 3px solid #e2e8f0; padding: 3rem; border-radius: 40px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.04); margin-top: 4rem;
+        }
+        .share-title { font-size: 2.5rem; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin-bottom: 1rem; }
+        .share-btn { 
+            padding: 18px 32px; border-radius: 20px; font-weight: 900; font-size: 16px;
+            display: flex; items-center gap: 12px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: white; shadow-lg;
+        }
+        .share-btn:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .btn-viber { background: #7360f2; border-bottom: 5px solid #5a49c9; }
+        .btn-whatsapp { background: #25d366; border-bottom: 5px solid #1ca750; }
+        .btn-copy { background: #1e293b; border-bottom: 5px solid #0f172a; }
+
+        .filter-btn {
+            padding: 12px 24px; border-radius: 14px; font-weight: 800; font-size: 11px; text-transform: uppercase;
+            letter-spacing: 1px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 2px solid transparent; cursor: pointer;
+        }
+        .filter-btn-off { background: white; color: #0f172a; border-color: #e2e8f0; }
+        .filter-btn-on { background: #10b981; color: white; border-color: #059669; }
     </style>
 </head>
 <body class="min-h-screen">
 
     <!-- GLOBAL HEADER -->
-    <header class="altgage-gradient text-white p-5 md:p-6 sticky top-0 z-50 shadow-2xl border-b border-white/10">
+    <header class="p-5 md:p-6 sticky top-0 z-50 shadow-xl">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div onclick="showView('landing')" class="flex items-center gap-4 cursor-pointer group">
+            <div onclick="showView('landing')" class="flex items-center gap-4 cursor-pointer group text-left">
                 <div class="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg shadow-emerald-500/20">
-                    <i class="fas fa-wallet text-slate-900 text-2xl"></i>
+                    <i class="fas fa-hand-holding-usd text-slate-900 text-2xl"></i>
                 </div>
-                <div class="text-white text-left">
-                    <h2 class="text-xl font-black tracking-tighter leading-none">EpidomaCheck</h2>
-                    <p class="text-[9px] uppercase tracking-[3px] text-emerald-400 font-bold">The easy way to check</p>
+                <div class="text-left">
+                    <h2 class="text-xl font-black tracking-tighter leading-none logo-text">EpidomaCheck</h2>
+                    <p class="text-[9px] uppercase tracking-[3px] text-emerald-500 font-bold">The easy way to check</p>
                 </div>
             </div>
             
             <nav class="flex items-center gap-3 md:gap-6">
-                <!-- ALL BENEFITS BUTTON -->
-                <button onclick="runCheck(true)" class="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-emerald-400 transition-all">
-                    Όλα τα επιδόματα
-                </button>
-                <button onclick="showView('report')" class="text-[10px] font-black uppercase tracking-widest bg-emerald-500 px-5 py-2.5 rounded-xl border border-white/20 hover:bg-emerald-400 transition-all text-slate-900 flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+                <button id="nav-all-link" onclick="runCheck(true)" class="text-[10px] font-black uppercase tracking-widest transition-all">Όλα τα επιδόματα</button>
+                <button onclick="showView('report')" class="text-[10px] font-black uppercase tracking-widest bg-slate-900 px-5 py-3 rounded-xl hover:bg-emerald-500 transition-all text-white flex items-center gap-2 shadow-lg">
                     <span>📢</span> <span class="hidden sm:inline">Αναγγελία Νέου</span> <span class="sm:hidden">Αναγγελία</span>
                 </button>
-                <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition-all">
-                    <i class="fas fa-adjust text-emerald-400"></i>
+                <button onclick="toggleDarkMode()" class="w-11 h-11 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-white/10 transition-all border border-slate-200 dark:border-slate-800">
+                    <i class="fas fa-adjust text-emerald-500 text-lg"></i>
                 </button>
             </nav>
         </div>
     </header>
 
-    <!-- MAIN CONTAINER -->
     <main>
-
-        <!-- 1. LANDING VIEW (PROMO HERO) -->
+        <!-- 1. LANDING VIEW -->
         <section id="landingView" class="view-section min-h-[92vh] flex flex-col items-center justify-center text-center space-y-12 bg-emerald-500 px-6 relative overflow-hidden">
-            <div class="absolute -top-20 -right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-            
+            <div class="absolute -top-20 -right-20 w-[600px] h-[600px] bg-white/10 rounded-full blur-3xl"></div>
             <div class="max-w-5xl space-y-8 relative z-10">
-                <h1 class="hero-title">
-                    EpidomaCheck: <br>
-                    <span class="text-slate-900 drop-shadow-sm">Ο ψηφιακός βοηθός για κάθε επίδομα!</span>
-                </h1>
-                <p class="text-xl md:text-3xl text-white font-semibold tracking-tight opacity-95 max-w-2xl mx-auto leading-tight">
-                    Βρες γρήγορα ποια επιδόματα δικαιούσαι.
-                </p>
+                <h1 class="hero-title text-slate-900">EpidomaCheck: <br><span class="text-slate-900 drop-shadow-sm">Ο ψηφιακός βοηθός για κάθε επίδομα!</span></h1>
+                <p class="text-xl md:text-3xl text-white font-bold tracking-tight opacity-95 max-w-2xl mx-auto leading-tight text-center">Βρες γρήγορα ποια επιδόματα δικαιούσαι.</p>
             </div>
-            
             <div class="pt-8 flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10 w-full max-w-2xl">
-                <button onclick="showView('form')" class="w-full sm:flex-1 bg-white text-emerald-600 text-xl font-black px-14 py-7 rounded-3xl shadow-2xl hover:scale-105 active:scale-95 transition-all uppercase tracking-widest">
-                    Ας ξεκινήσουμε <i class="fas fa-bolt ml-4 text-sm animate-pulse"></i>
-                </button>
-                <button onclick="runCheck(true)" class="w-full sm:flex-1 bg-emerald-900/30 border-2 border-white/40 text-white font-bold px-12 py-7 rounded-3xl hover:bg-white/10 transition-all uppercase tracking-widest text-sm backdrop-blur-md">
-                    Δες ολα τα επιδοματα
-                </button>
+                <button onclick="showView('form')" class="w-full sm:flex-1 bg-white text-emerald-600 text-xl font-black px-14 py-8 rounded-3xl shadow-2xl hover:scale-105 active:scale-95 transition-all uppercase tracking-widest">Ας ξεκινήσουμε <i class="fas fa-bolt ml-4 text-sm animate-pulse"></i></button>
+                <button onclick="runCheck(true)" class="w-full sm:flex-1 bg-emerald-900/40 border-2 border-white/50 text-white font-black px-12 py-8 rounded-3xl hover:bg-white/10 transition-all uppercase tracking-widest text-sm backdrop-blur-md">Δες ολα τα επιδοματα</button>
             </div>
         </section>
 
         <div class="max-w-7xl mx-auto p-4 md:p-12">
-            
             <!-- 2. FORM VIEW -->
             <section id="formView" class="view-section hidden-view max-w-4xl mx-auto py-6">
                 <div class="form-card dark:border-slate-800">
                     <div class="mb-12 text-center border-b border-slate-100 dark:border-slate-800 pb-10">
-                        <h2 class="text-3xl font-black tracking-tight mb-2 text-slate-900 dark:text-white uppercase">Συμπλήρωσε τα στοιχεία σου</h2>
-                        <p class="text-slate-500 font-bold uppercase tracking-[2px] text-[11px]">Βασικά Στοιχεία Πολίτη</p>
+                        <h2 class="text-3xl font-black tracking-tight mb-2 light-title dark:text-white uppercase">Συμπλήρωσε τα στοιχεία σου</h2>
+                        <p class="text-emerald-600 font-bold uppercase tracking-[2px] text-[11px]">Βασικά Στοιχεία Πολίτη</p>
                     </div>
-                    
                     <div class="space-y-12">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-black">
-                            <div class="input-group">
-                                <label>Φύλο</label>
-                                <select id="gender" class="custom-input text-slate-900">
-                                    <option value="female">Γυναίκα</option>
-                                    <option value="male">Άνδρας</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label>Ηλικία (18-100)</label>
-                                <input type="number" id="age" value="30" min="18" max="100" class="custom-input text-slate-900">
-                            </div>
-                            <div class="input-group">
-                                <label>Περιοχή</label>
-                                <select id="location" class="custom-input text-slate-900">
-                                    <option value="urban">Αστική Περιοχή</option>
-                                    <option value="island">Νησιωτική Ελλάδα</option>
-                                    <option value="mountain">Ορεινή / Μειονεκτική</option>
-                                </select>
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="input-group"><label>Φύλο</label><select id="gender" class="custom-input"><option value="female">Γυναίκα</option><option value="male">Άνδρας</option></select></div>
+                            <div class="input-group"><label>Ηλικία (18-100)</label><input type="number" id="age" value="30" min="18" max="100" class="custom-input"></div>
+                            <div class="input-group"><label>Περιοχή</label><select id="location" class="custom-input"><option value="urban">Αστική Περιοχή</option><option value="island">Νησιωτική Ελλάδα</option><option value="mountain">Ορεινή / Μειονεκτική</option></select></div>
                         </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-black">
-                            <div class="input-group">
-                                <label>Εργασιακή Κατάσταση</label>
-                                <select id="job" class="custom-input text-slate-900">
-                                    <option value="private_sector">Ιδιωτικός Υπάλληλος</option>
-                                    <option value="public_sector">Δημόσιος Υπάλληλος</option>
-                                    <option value="unemployed">Άνεργος (ΔΥΠΑ)</option>
-                                    <option value="student">Φοιτητής / Σπουδαστής</option>
-                                    <option value="farmer">Αγρότης / Κτηνοτρόφος</option>
-                                    <option value="pensioner">Συνταξιούχος</option>
-                                    <option value="business">Νέος Επιχειρηματίας</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label>Ετήσιο Εισόδημα (€)</label>
-                                <input type="number" id="income" value="0" min="0" class="custom-input text-slate-900 font-black">
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="input-group"><label>Εργασιακή Κατάσταση</label><select id="job" class="custom-input"><option value="private_sector">Ιδιωτικός Υπάλληλος</option><option value="public_sector">Δημόσιος Υπάλληλος</option><option value="unemployed">Άνεργος (ΔΥΠΑ)</option><option value="student">Φοιτητής / Σπουδαστής</option><option value="farmer">Αγρότης / Κτηνοτρόφος</option><option value="pensioner">Συνταξιούχος</option><option value="business">Νέος Επιχειρηματίας</option></select></div>
+                            <div class="input-group"><label>Ετήσιο Εισόδημα (€)</label><input type="number" id="income" value="0" min="0" class="custom-input"></div>
                         </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-black">
-                            <div class="input-group">
-                                <label>Μέλη Νοικοκυριού</label>
-                                <input type="number" id="householdSize" value="1" min="1" max="20" class="custom-input text-slate-900">
-                            </div>
-                            <div class="input-group">
-                                <label>Παιδιά (0-15)</label>
-                                <input type="number" id="kids" value="0" min="0" max="15" class="custom-input text-slate-900">
-                            </div>
-                            <div class="input-group">
-                                <label>Ποσοστό ΑμεΑ % (0-100)</label>
-                                <input type="number" id="amea" value="0" min="0" max="100" class="custom-input text-slate-900">
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="input-group"><label>Μέλη Νοικοκυριού</label><input type="number" id="householdSize" value="1" min="1" max="20" class="custom-input"></div>
+                            <div class="input-group"><label>Παιδιά (0-15)</label><input type="number" id="kids" value="0" min="0" max="15" class="custom-input"></div>
+                            <div class="input-group"><label>Ποσοστό ΑμεΑ % (0-100)</label><input type="number" id="amea" value="0" min="0" max="100" class="custom-input"></div>
                         </div>
-
-                        <div class="p-10 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border-2 border-emerald-100 dark:border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-8 shadow-sm text-black">
+                        <div class="p-10 bg-slate-100 dark:bg-slate-900/50 rounded-3xl border-2 border-slate-200 dark:border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-8 shadow-sm">
                             <div class="space-y-4">
-                                <h4 class="text-[10px] font-black uppercase tracking-widest text-emerald-500 border-b pb-2">Περιουσία</h4>
-                                <div class="flex items-center justify-between">
-                                    <label for="hasProperty" class="text-xs font-bold cursor-pointer uppercase text-slate-700 dark:text-white">Ιδιόκτητο Ακίνητο</label>
-                                    <input type="checkbox" id="hasProperty" class="w-6 h-6 accent-emerald-500 cursor-pointer rounded-lg">
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <label for="hasVehicle" class="text-xs font-bold cursor-pointer uppercase text-slate-700 dark:text-white">Κατοχή Οχήματος</label>
-                                    <input type="checkbox" id="hasVehicle" class="w-6 h-6 accent-emerald-500 cursor-pointer rounded-lg">
-                                </div>
+                                <h4 class="sub-header-pill inline-block uppercase tracking-widest mb-2">Περιουσία</h4>
+                                <div class="flex items-center justify-between"><label for="hasProperty" class="text-xs font-bold cursor-pointer uppercase text-slate-900 dark:text-white">Ιδιόκτητο Ακίνητο</label><input type="checkbox" id="hasProperty" class="w-7 h-7 accent-emerald-500 cursor-pointer"></div>
+                                <div class="flex items-center justify-between"><label for="hasVehicle" class="text-xs font-bold cursor-pointer uppercase text-slate-900 dark:text-white">Κατοχή Οχήματος</label><input type="checkbox" id="hasVehicle" class="w-7 h-7 accent-emerald-500 cursor-pointer"></div>
                             </div>
                             <div class="space-y-4">
-                                <h4 class="text-[10px] font-black uppercase tracking-widest text-emerald-500 border-b pb-2">Οικογένεια</h4>
-                                <div class="flex items-center justify-between">
-                                    <label for="isSingleParent" class="text-xs font-bold cursor-pointer uppercase text-slate-700 dark:text-white">Μονογονέας</label>
-                                    <input type="checkbox" id="isSingleParent" class="w-6 h-6 accent-emerald-500 cursor-pointer rounded-lg">
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <label for="isLargeFamily" class="text-xs font-bold cursor-pointer uppercase text-slate-700 dark:text-white">Τρίτεκνος/Πολύτεκνος</label>
-                                    <input type="checkbox" id="isLargeFamily" class="w-6 h-6 accent-emerald-500 cursor-pointer rounded-lg">
-                                </div>
+                                <h4 class="sub-header-pill inline-block uppercase tracking-widest mb-2">Οικογένεια</h4>
+                                <div class="flex items-center justify-between"><label for="isSingleParent" class="text-xs font-bold cursor-pointer uppercase text-slate-900 dark:text-white">Μονογονέας</label><input type="checkbox" id="isSingleParent" class="w-7 h-7 accent-emerald-500 cursor-pointer"></div>
+                                <div class="flex items-center justify-between"><label for="isLargeFamily" class="text-xs font-bold cursor-pointer uppercase text-slate-900 dark:text-white">Τρίτεκνος/Πολύτεκνος</label><input type="checkbox" id="isLargeFamily" class="w-7 h-7 accent-emerald-500 cursor-pointer"></div>
                             </div>
                             <div class="space-y-4">
-                                <h4 class="text-[10px] font-black uppercase tracking-widest text-emerald-500 border-b pb-2">Κοινωνικά</h4>
-                                <div class="flex items-center justify-between">
-                                    <label for="isMinority" class="text-xs font-bold cursor-pointer uppercase text-slate-700 dark:text-white">Μειονοτικό</label>
-                                    <input type="checkbox" id="isMinority" class="w-6 h-6 accent-emerald-500 cursor-pointer rounded-lg">
-                                </div>
+                                <h4 class="sub-header-pill inline-block uppercase tracking-widest mb-2">Κοινωνικά</h4>
+                                <div class="flex items-center justify-between"><label for="isMinority" class="text-xs font-bold cursor-pointer uppercase text-slate-900 dark:text-white">Μειονοτικό</label><input type="checkbox" id="isMinority" class="w-7 h-7 accent-emerald-500 cursor-pointer"></div>
                             </div>
                         </div>
-
-                        <button onclick="runCheck()" class="w-full bg-emerald-600 text-white font-black py-7 rounded-3xl shadow-2xl hover:bg-emerald-700 active:scale-[0.98] transition-all text-2xl tracking-tighter uppercase">
-                            Βρες τα επιδόματά σου <i class="fas fa-search-dollar ml-4"></i>
-                        </button>
-                        <button onclick="showView('landing')" class="w-full text-slate-400 font-bold py-2 text-[10px] uppercase tracking-[4px] hover:text-emerald-500 transition-all text-black">Πίσω στην αρχική</button>
+                        <button onclick="runCheck()" class="w-full bg-emerald-600 text-white font-black py-8 rounded-3xl shadow-2xl hover:bg-emerald-700 active:scale-[0.98] transition-all text-2xl tracking-tighter uppercase text-center">Βρες τα επιδόματά σου <i class="fas fa-search-dollar ml-4"></i></button>
+                        <button onclick="showView('landing')" class="w-full text-slate-500 font-bold py-2 text-[11px] uppercase tracking-[4px] hover:text-emerald-500 transition-all text-center">Πίσω στην αρχική</button>
                     </div>
                 </div>
             </section>
 
             <!-- 3. RESULTS VIEW -->
-            <section id="resultsView" class="view-section hidden-view py-6 space-y-12 text-black">
+            <section id="resultsView" class="view-section hidden-view py-6 space-y-12">
                 <div class="flex flex-col md:flex-row items-center justify-between bg-emerald-600 p-12 rounded-[40px] text-white shadow-2xl relative overflow-hidden">
                     <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                    <div class="space-y-2 mb-8 md:mb-0 text-center md:text-left relative z-10">
-                        <h2 id="resultsHeading" class="text-4xl font-black tracking-tight uppercase leading-none text-white">Βρέθηκαν οι παροχές σου!</h2>
+                    <div class="space-y-4 mb-8 md:mb-0 text-center md:text-left relative z-10 text-white">
+                        <h2 id="resultsHeading" class="text-4xl font-black tracking-tight uppercase leading-none">Βρέθηκαν οι παροχές σου!</h2>
                         <p id="resultsSub" class="opacity-90 font-medium text-lg">Αυτά δικαιούσαι με βάση το προφίλ σου.</p>
+                        <div class="pt-2 flex justify-center md:justify-start">
+                            <button id="activeFilterBtn" onclick="toggleActiveFilter()" class="filter-btn filter-btn-off"><i class="fas fa-toggle-off"></i> Διαθέσιμα Τώρα</button>
+                        </div>
                     </div>
-                    <button onclick="showView('form')" class="bg-white text-emerald-900 px-12 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-100 text-sm shadow-xl relative z-10">
-                        Αλλαγή Στοιχείων
-                    </button>
+                    <button onclick="showView('form')" class="bg-white text-emerald-900 px-12 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-100 text-sm shadow-xl relative z-10 transition-all">Αλλαγή Στοιχείων</button>
                 </div>
-
+                
                 <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
 
-                <!-- VIRAL SHARE SECTION -->
-                <div class="bg-white dark:bg-slate-900 p-12 rounded-[40px] border-2 border-emerald-100 dark:border-slate-800 text-center space-y-8 shadow-xl">
-                    <div class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Μοιράσου το με φίλους!</div>
-                    <p class="text-slate-500 font-medium max-w-xl mx-auto">Βρήκες χρήσιμο το EpidomaCheck; Βοήθησε κι άλλους να μάθουν τι δικαιούνται στέλνοντας το link!</p>
+                <!-- NEW SHARING HUB -->
+                <div class="share-container">
+                    <div class="share-title text-slate-900 dark:text-white">Μοιράσου το EpidomaCheck!</div>
+                    <p class="share-text text-slate-500 dark:text-slate-400 font-bold text-lg mb-10">Βοήθησε κι άλλους να μάθουν τι δικαιούνται στέλνοντας το link σε φίλους και συγγενείς!</p>
                     <div class="flex flex-wrap justify-center gap-6">
-                        <button onclick="shareLink('viber')" class="share-btn btn-viber">
-                            <i class="fab fa-viber text-xl"></i> Viber
+                        <button onclick="shareLink('viber')" class="share-btn btn-viber grow sm:grow-0 justify-center">
+                            <i class="fab fa-viber text-2xl"></i> Viber
                         </button>
-                        <button onclick="shareLink('whatsapp')" class="share-btn btn-whatsapp">
-                            <i class="fab fa-whatsapp text-xl"></i> WhatsApp
+                        <button onclick="shareLink('whatsapp')" class="share-btn btn-whatsapp grow sm:grow-0 justify-center">
+                            <i class="fab fa-whatsapp text-2xl"></i> WhatsApp
                         </button>
-                        <button onclick="shareLink('copy')" class="share-btn bg-slate-900 text-white">
+                        <button onclick="shareLink('copy')" class="share-btn btn-copy grow sm:grow-0 justify-center">
                             <i class="fas fa-link"></i> Αντιγραφή Link
                         </button>
                     </div>
+                    <div class="mt-8 text-[10px] uppercase font-black tracking-[4px] text-emerald-500 opacity-60">Spread the financial help</div>
                 </div>
             </section>
 
@@ -335,69 +300,38 @@
             <section id="reportView" class="view-section hidden-view max-w-4xl mx-auto py-12">
                 <div class="form-card dark:border-slate-800 text-center">
                     <div class="mb-12">
-                        <div class="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-3xl flex items-center justify-center mx-auto mb-8 text-emerald-500 text-4xl shadow-inner">
-                            <span>📢</span>
-                        </div>
-                        <h2 id="reportTitle" class="text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase leading-none text-black">Αναγγελία Νέου Επιδόματος</h2>
-                        <p class="text-slate-800 dark:text-slate-300 text-xl font-bold mt-8 px-12 leading-relaxed italic border-l-8 border-emerald-500 inline-block text-left">
-                            Βρήκες κάποιο επίδομα που δεν έχουμε; Γράψ΄το για να το προσθέσουμε στη λίστα μας!
-                        </p>
+                        <div class="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-3xl flex items-center justify-center mx-auto mb-8 text-emerald-500 text-4xl shadow-inner"><span>📢</span></div>
+                        <h2 id="reportTitle" class="text-3xl font-black tracking-tight light-title dark:text-white uppercase leading-none">Αναγγελία Νέου Επιδόματος</h2>
+                        <p class="text-slate-800 dark:text-slate-300 text-xl font-bold mt-8 px-12 leading-relaxed italic border-l-8 border-emerald-500 inline-block text-left">Βρήκες κάποιο επίδομα που δεν έχουμε; Γράψ΄το για να το προσθέσουμε στη λίστα μας!</p>
                     </div>
-                    
                     <div class="space-y-10">
-                        <div class="input-group text-left">
-                            <label>Όνομα Επιδόματος (π.χ. Επίδομα Ρεύματος...)</label>
-                            <input type="text" id="reportBenefitName" placeholder="Πληκτρολόγησε εδώ..." class="custom-input text-xl py-6 text-slate-900 shadow-sm">
-                        </div>
-                        <button onclick="researchBenefit()" class="w-full bg-slate-900 text-white font-black py-7 rounded-3xl shadow-2xl hover:bg-black transition-all uppercase tracking-widest text-xl">
-                            Εναρξη ερευνας & αποθηκευση <i class="fas fa-cloud-upload-alt ml-4"></i>
-                        </button>
-                        <div id="researchLoader" class="hidden mt-10 text-emerald-500 font-black animate-pulse text-lg tracking-widest">
-                            <i class="fas fa-microchip fa-spin mr-3"></i> Ο ΜΠΑΜΠΗΣ ΕΝΗΜΕΡΩΝΕΙ ΤΟ CLOUD...
-                        </div>
-                        <button onclick="showView('landing')" class="w-full text-slate-400 font-bold py-2 text-[11px] uppercase tracking-[4px] text-black">Ακύρωση</button>
+                        <div class="input-group text-left"><label>Όνομα Επιδόματος</label><input type="text" id="reportBenefitName" placeholder="π.χ. Market Pass 3..." class="custom-input text-xl py-6 text-slate-900 shadow-sm"></div>
+                        <button onclick="researchBenefit()" class="w-full bg-slate-900 text-white font-black py-7 rounded-3xl shadow-2xl hover:bg-black transition-all uppercase tracking-widest text-xl">Εναρξη ερευνας & αποθηκευση <i class="fas fa-cloud-upload-alt ml-4"></i></button>
+                        <div id="researchLoader" class="hidden mt-10 text-emerald-500 font-black animate-pulse text-lg tracking-widest"><i class="fas fa-microchip fa-spin mr-3"></i> Ο ΜΠΑμΠΗΣ ΕΝΗΜΕΡΩΝΕΙ ΤΟ CLOUD...</div>
+                        <button onclick="showView('landing')" class="w-full text-slate-400 font-bold py-2 text-[11px] uppercase tracking-[4px]">Ακύρωση</button>
                     </div>
                 </div>
             </section>
         </div>
-
     </main>
 
-    <!-- Scroll to Top Button -->
-    <div id="scrollTopBtn" class="scroll-top-btn hidden" onclick="window.scrollTo({top: 0})">
-        <i class="fas fa-chevron-up"></i>
-    </div>
+    <!-- Scroll to Top -->
+    <div id="scrollTopBtn" class="scroll-top-btn hidden" onclick="window.scrollTo({top: 0})"><i class="fas fa-chevron-up"></i></div>
 
     <!-- BABIS AI -->
     <div class="chat-toggle-container fixed bottom-10 right-10 flex items-center gap-6 z-[1001]">
-        <div class="babis-bubble hidden md:block shadow-2xl" id="babisMessage">Πες μου τι ψάχνεις και θα σε βοηθήσω αμέσως!</div>
+        <div class="babis-bubble hidden md:block shadow-2xl text-left" id="babisMessage">Είμαι ο Μπάμπης, αν θες βοήθεια, ρώτα με!</div>
         <div class="chat-toggle" onclick="toggleChat()">🤖</div>
     </div>
-
     <div id="babisWidget" class="chat-widget hidden">
-        <div class="chat-header text-white">
-            <span class="font-black text-[11px] uppercase tracking-widest">Babis Executive AI</span>
-            <button onclick="toggleChat()" class="opacity-40 hover:opacity-100 text-white"><i class="fas fa-times text-xl"></i></button>
-        </div>
-        <div id="chatMessages" class="chat-messages p-6 overflow-y-auto flex-1 bg-white font-medium text-[13px] text-slate-700">
-            <div class="message msg-ai text-slate-900">Γεια σου! Είμαι ο Μπάμπης. Πες μου τι σε απασχολεί για τα επιδόματα και θα σου απαντήσω αμέσως.</div>
-        </div>
-        <div class="p-4 border-t border-slate-100 bg-white">
-            <div class="flex gap-3">
-                <input type="text" id="chatInput" placeholder="Γράψε εδώ..." class="flex-1 p-3 outline-none chat-input-field font-bold text-sm text-black" onkeypress="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()" class="bg-emerald-600 text-white px-4 rounded-lg shadow-md"><i class="fas fa-paper-plane text-xl"></i></button>
-            </div>
-        </div>
+        <div class="chat-header text-white"><div class="flex items-center gap-3"><span class="text-xl">🤖</span><span class="font-black text-[12px] uppercase tracking-widest">Babis Chat AI</span></div><button onclick="toggleChat()" class="opacity-60 hover:opacity-100 text-white transition-all"><i class="fas fa-times text-xl"></i></button></div>
+        <div id="chatMessages" class="chat-messages"><div class="message-bubble msg-ai">Γεια σου! Είμαι ο Μπάμπης. Πες μου τι σε απασχολεί για τα επιδόματα και θα σου απαντήσω αμέσως.</div></div>
+        <div class="p-4 border-t border-slate-200 bg-white"><div class="flex gap-3"><input type="text" id="chatInput" placeholder="Γράψε το μήνυμά σου..." class="flex-1 p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none font-bold text-sm text-black focus:border-blue-500 transition-all" onkeypress="if(event.key==='Enter') sendMessage()"><button onclick="sendMessage()" class="bg-emerald-600 text-white px-6 rounded-2xl shadow-md"><i class="fas fa-paper-plane text-xl"></i></button></div></div>
     </div>
-
-    <footer class="py-24 text-center text-slate-400 text-[10px] font-black uppercase tracking-[1em] opacity-50">
-        &copy; 2026 EPIDOMACHECK • FINTECH ASSISTANT • CREATED BY [EAK]
-    </footer>
 
     <script type="module">
         import { collection, setDoc, doc, onSnapshot, query, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const apiKey = ""; // API Key used by system
+        const apiKey = ""; 
 
         const localBenefits = [
             { id: 1, name: "Επίδομα Παιδιού (Α21)", icon: "👶", category: "family", amount: 0, gov: "https://www.idika.gr/epidomapaidiou/", desc: "Μηνιαία ενίσχυση που υπολογίζεται βάσει του εισοδήματος και των παιδιών σου.", dynamic: true, start: "2026-02-01", end: "2026-12-31", reqGender: 'female', ageMax: 52 },
@@ -405,7 +339,7 @@
             { id: 3, name: "Ελάχιστο Εγγυημένο Εισόδημα", icon: "🤝", category: "welfare", amount: 0, gov: "https://keaprogram.gr/", desc: "Προνοιακή παροχή αν ζεις σε συνθήκες ακραίας φτώχειας.", dynamic: true, start: "2026-01-01", end: "2026-12-31" },
             { id: 4, name: "Επίδομα Ανεργίας (ΔΥΠΑ)", icon: "💼", category: "work", amount: 510, gov: "https://www.gov.gr/ipiresies/ergasia-kai-asphalise/anergia/aitese-epidomatos-anergias", desc: "Μηνιαία ενίσχυση 510€ αν έχεις απολυθεί.", reqJob: 'unemployed', start: "2026-01-01", end: "2026-12-31" },
             { id: 5, name: "Επίδομα Γέννησης", icon: "🍼", category: "family", amount: 2400, gov: "https://www.idika.gr/epidomagennisis/", desc: "Ενίσχυση 2.400€-3.500€ για κάθε νέα γέννηση. Αφορά τις μητέρες.", reqGender: 'female', ageMax: 52, limit: 40000, start: "2026-01-01", end: "2026-12-31" },
-            { id: 6, name: "Μεταφορικό Ισοδύναμο", icon: "🚢", category: "welfare", amount: 300, gov: "https://www.metaforikoisodynamo.gr/", desc: "Επιστροφή κόστους εισιτηρίων αν είσαι μόνιμος κάτοικος νησιού.", reqLoc: 'island', start: "2026-01-01", end: "2026-12-31" },
+            { id: 6, name: "Μεταφορικό Ισοδύναμο", icon: "🚢", category: "welfare", amount: 300, gov: "https://www.metaforikoisodynamo.gr/", desc: "Επιστροφή κόστους εισιτηρίων αν είσαι νησιώτης.", reqLoc: 'island', start: "2026-01-01", end: "2026-12-31" },
             { id: 7, name: "Ενίσχυση Ορεινών Περιοχών", icon: "🏔️", category: "welfare", amount: 600, gov: "https://www.opeka.gr/oikogeneia/eisodimatiki-enishysi-oreinon-meionektikon-periochon/", desc: "Ετήσια ενίσχυση €600 αν κατοικείς σε ορεινή περιοχή.", reqLoc: 'mountain', limit: 4700, start: "2026-09-01", end: "2026-10-31" },
             { id: 8, name: "Επίδομα ΑμεΑ", icon: "♿", category: "health", amount: 4800, gov: "https://www.gov.gr/", desc: "Μηνιαία οικονομική στήριξη βάσει ποσοστού αναπηρίας 67% και άνω.", reqAmea: 67, start: "2026-01-01", end: "2026-12-31" },
             { id: 9, name: "Youth Pass 2026", icon: "🎫", category: "welfare", amount: 150, gov: "https://vouchers.gov.gr/youthpass", desc: "Ψηφιακή κάρτα €150 αν είσαι 18-19 ετών.", ageMin: 18, ageMax: 19, start: "2026-11-01", end: "2026-12-01" },
@@ -416,7 +350,7 @@
             { id: 14, name: "Dentist Pass", icon: "🦷", category: "health", amount: 40, gov: "https://vouchers.gov.gr/", desc: "Voucher για οδοντιατρική φροντίδα παιδιών.", ageMax: 12, start: "2026-03-01", end: "2026-04-30" },
             { id: 15, name: "Εξοικονομώ 2026", icon: "🏗️", category: "housing", amount: 15000, gov: "https://exoikonomo2023.gov.gr/", desc: "Επιχορήγηση για ενεργειακή αναβάθμιση σπιτιού.", reqProperty: true, start: "2026-04-15", end: "2026-05-30" },
             { id: 16, name: "Επίδομα Μητρότητας", icon: "🤱", category: "family", amount: 7500, gov: "https://www.gov.gr/", desc: "9μηνη ενίσχυση για εργαζόμενες μητέρες.", reqGender: 'female', ageMax: 52, reqJob: 'private_sector', start: "2026-01-01", end: "2026-12-31" },
-            { id: 17, name: "ΚΟΤ (Κοινωνικό Τιμολόγιο)", icon: "⚡", category: "housing", amount: 450, desc: "Έκπτωση ρεύματος για ευάλωτα νοικοκυριά.", dynamic: true, start: "2026-01-01", end: "2026-12-31" },
+            { id: 17, name: "ΚΟΤ", icon: "⚡", category: "housing", amount: 450, desc: "Έκπτωση ρεύματος για ευάλωτα νοικοκυριά.", dynamic: true, start: "2026-01-01", end: "2026-12-31" },
             { id: 18, name: "Επίδομα Αναδοχής", icon: "🤝", category: "family", amount: 4500, desc: "Μηνιαία οικονομική στήριξη για αναδόχους.", start: "2026-01-01", end: "2026-12-31" },
             { id: 19, name: "Σχολικά Γεύματα", icon: "🍱", category: "family", amount: 0, desc: "Παροχή δωρεάν γευμάτων σε μαθητές.", reqKids: true, start: "2026-09-11", end: "2026-12-31" },
             { id: 20, name: "Τουρισμός για Όλους", icon: "🏨", category: "welfare", amount: 150, gov: "https://vouchers.gov.gr/", desc: "Voucher για διαμονή.", start: "2026-03-01", end: "2026-04-30" },
@@ -434,16 +368,23 @@
             { id: 32, name: "Ενίσχυση Νέων Επιχειρηματιών", icon: "🚀", category: "work", amount: 14800, desc: "Επιχορήγηση για έναρξη επιχείρησης από νέους.", reqJob: 'business', start: "2026-03-15", end: "2026-05-15" },
             { id: 33, name: "Voucher Βρεφονηπιακών", icon: "🧸", category: "family", amount: 0, desc: "Δωρεάν πρόσβαση σε παιδικούς σταθμούς.", reqKids: true, reqGender: 'female', ageMax: 52, start: "2026-07-01", end: "2026-08-15" },
             { id: 34, name: "Επίδομα Κοινωνικής Αλληλεγγύης", icon: "💜", category: "welfare", amount: 250, desc: "Έκτακτη οικονομική ενίσχυση ευάλωτων.", limit: 5400, start: "2026-12-01", end: "2026-12-31" },
-            { id: 35, name: "Ενίσχυση Πολιτισμού", icon: "🎭", category: "welfare", amount: 100, desc: "Voucher για θέατρα και βιβλία.", start: "2026-04-01", end: "2026-06-01" }
+            { id: 35, name: "Ενίσχυση Πολιτισμού", icon: "🎭", category: "welfare", amount: 100, desc: "Voucher για θέατρα και βιβλία.", start: "2026-04-01", end: "2026-06-01" },
+            { id: 36, name: "Προγράμματα Young Farmers", icon: "👨‍🌾", category: "work", amount: 40000, desc: "Επιχορήγηση για νέους γεωργούς.", reqJob: 'farmer', ageMax: 41, start: "2026-01-01", end: "2026-12-31" },
+            { id: 37, name: "Επίδομα Σίτισης Φοιτητών", icon: "🍽️", category: "welfare", amount: 0, desc: "Δωρεάν σίτιση σε πανεπιστημιακές λέσχες.", reqJob: 'student', start: "2026-09-01", end: "2026-12-31" },
+            { id: 38, name: "Ανακυκλώνω-Αλλάζω Συσκευή", icon: "📺", category: "housing", amount: 700, desc: "Επιδότηση αντικατάστασης παλαιών συσκευών.", reqProperty: true, start: "2026-05-01", end: "2026-07-30" },
+            { id: 39, name: "Ενίσχυση Παραμεθόριων", icon: "🇬🇷", category: "welfare", amount: 150, desc: "Ειδικό βοήθημα για κατοίκους ακριτικών περιοχών.", reqLoc: 'island', start: "2026-01-01", end: "2026-12-31" },
+            { id: 40, name: "Επίδομα Έκτακτης Ανάγκης", icon: "🆘", category: "welfare", amount: 500, desc: "Βοήθημα για περιπτώσεις θεομηνιών.", limit: 12000, start: "2026-01-01", end: "2026-12-31" }
         ];
 
         window.extraBenefits = [];
+        window.currentIsAll = false;
+        window.activeFilterOn = false;
 
         window.listenToExtraBenefits = () => {
             const q = collection(window.db, 'artifacts', window.appId, 'public', 'data', 'extraBenefits');
             onSnapshot(q, (snapshot) => {
                 window.extraBenefits = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                if(document.getElementById('resultsView').classList.contains('hidden-view') === false) runCheck(false);
+                if(document.getElementById('resultsView').classList.contains('hidden-view') === false) runCheck(window.currentIsAll);
             });
         };
 
@@ -457,17 +398,9 @@
             const now = new Date("2026-04-02"); 
             const s = new Date(b.start); const e = new Date(b.end);
             const dE = (e - now) / 86400000; const dS = (s - now) / 86400000;
-            if (now >= s && now <= e) return (dE < 30 && dE > 0) ? { class: 'bg-urgent', label: `ΚΛΕΙΝΕΙ ΣΕ ${Math.ceil(dE)} ΜΕΡΕΣ` } : { class: 'bg-open', label: 'ΑΝΟΙΧΤΕΣ ΔΗΛΩΣΕΙΣ' };
-            if (now < s) return (dS < 30 && dS > 0) ? { class: 'bg-soon', label: `ΑΝΟΙΓΕΙ ΣΕ ${Math.ceil(dS)} ΜΕΡΕΣ` } : { class: 'bg-soon', label: 'ΑΝΑΜΕΝΕΤΑΙ' };
-            return { class: 'bg-urgent', label: 'ΕΛΗΞΕ' };
-        };
-
-        window.calculateAmount = (b, user) => {
-            if (!b.dynamic) return b.amount;
-            if (b.id === 1) return (user.kids || 1) * 70;
-            if (b.id === 2) return 70 + (Math.min(user.householdSize, 5) - 1) * 35;
-            if (b.id === 3) return 216 + (Math.max(1, user.householdSize - user.kids) - 1) * 108 + (user.kids * 54);
-            return b.amount;
+            if (now >= s && now <= e) return (dE < 30 && dE > 0) ? { class: 'bg-urgent', label: `ΚΛΕΙΝΕΙ ΣΕ ${Math.ceil(dE)} ΜΕΡΕΣ`, isOpen: true } : { class: 'bg-open', label: 'ΑΝΟΙΧΤΕΣ ΔΗΛΩΣΕΙΣ', isOpen: true };
+            if (now < s) return (dS < 30 && dS > 0) ? { class: 'bg-soon', label: `ΑΝΟΙΓΕΙ ΣΕ ${Math.ceil(dS)} ΜΕΡΕΣ`, isOpen: false } : { class: 'bg-soon', label: 'ΑΝΑΜΕΝΕΤΑΙ', isOpen: false };
+            return { class: 'bg-urgent', label: 'ΕΛΗΞΕ', isOpen: false };
         };
 
         window.renderGrid = (list, user, isAll = false) => {
@@ -476,21 +409,18 @@
             const sub = document.getElementById('resultsSub');
             h.innerText = isAll ? "Κατάλογος Παροχών" : "Βρέθηκαν οι παροχές σου!";
             sub.innerText = isAll ? "Εδώ μπορείς να δεις όλα τα καταχωρημένα επιδόματα." : "Αυτά δικαιούσαι με βάση το προφίλ σου.";
-            grid.innerHTML = list.map(b => {
-                const amount = window.calculateAmount(b, user);
+            const finalDisplayList = window.activeFilterOn ? list.filter(b => window.getStatus(b).isOpen) : list;
+            grid.innerHTML = finalDisplayList.map(b => {
+                const amount = b.dynamic ? (user.kids * 70 + 70) : b.amount;
                 const s = window.getStatus(b);
                 return `
-                <div onclick="window.openModal('${b.id}', ${amount})" class="card p-8 flex flex-col justify-between h-full bg-white shadow-lg">
+                <div onclick="window.openModal('${b.id}', ${amount})" class="card p-8 flex flex-col justify-between h-full bg-white shadow-lg text-left">
                     <div class="status-badge ${s.class}">${s.label}</div>
-                    <div>
-                        <div class="flex items-center gap-5 mb-5 mt-2">
-                            <div class="text-[50px] leading-none transform group-hover:scale-110 transition-transform">${b.icon}</div>
-                            <h4 class="card-benefit-name text-lg">${b.name}</h4>
-                        </div>
+                    <div><div class="flex items-center gap-5 mb-5 mt-2"><div class="text-[50px] leading-none transform group-hover:scale-110 transition-transform">${b.icon}</div><h4 class="card-benefit-name text-lg">${b.name}</h4></div>
                         <p class="text-slate-500 dark:text-slate-400 text-xs mb-8 italic leading-relaxed line-clamp-2">${b.desc}</p>
                     </div>
                     <div class="pt-5 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-black">
-                        <span class="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Λεπτομέρειες</span>
+                        <span class="text-[8px] font-black text-emerald-600 uppercase tracking-widest">Λεπτομέρειες</span>
                         <span class="text-2xl font-black text-slate-900 dark:text-white">${amount > 0 ? '€' + amount.toLocaleString() : '---'}</span>
                     </div>
                 </div>
@@ -498,16 +428,22 @@
             }).join('');
         };
 
+        window.toggleActiveFilter = () => {
+            window.activeFilterOn = !window.activeFilterOn;
+            const btn = document.getElementById('activeFilterBtn');
+            btn.className = window.activeFilterOn ? "filter-btn filter-btn-on" : "filter-btn filter-btn-off";
+            btn.innerHTML = window.activeFilterOn ? '<i class="fas fa-toggle-on"></i> Διαθέσιμα Τώρα' : '<i class="fas fa-toggle-off"></i> Διαθέσιμα Τώρα';
+            runCheck(window.currentIsAll);
+        };
+
         window.runCheck = (all = false) => {
-            let uInc = Math.max(0, parseFloat(document.getElementById('income').value) || 0);
-            let uKid = Math.min(15, Math.max(0, parseInt(document.getElementById('kids').value) || 0));
-            let uAm = Math.min(100, Math.max(0, parseInt(document.getElementById('amea').value) || 0));
-            const user = { gender: document.getElementById('gender').value, income: uInc, kids: uKid, householdSize: parseInt(document.getElementById('householdSize').value) || 1, age: parseInt(document.getElementById('age').value) || 0, loc: document.getElementById('location').value, job: document.getElementById('job').value, amea: uAm, hasProperty: document.getElementById('hasProperty').checked, hasVehicle: document.getElementById('hasVehicle').checked, isSingleParent: document.getElementById('isSingleParent').checked, isLargeFamily: document.getElementById('isLargeFamily').checked, isMinority: document.getElementById('isMinority').checked };
+            window.currentIsAll = all;
+            const user = { gender: document.getElementById('gender').value, income: parseFloat(document.getElementById('income').value) || 0, kids: parseInt(document.getElementById('kids').value) || 0, householdSize: parseInt(document.getElementById('householdSize').value) || 1, age: parseInt(document.getElementById('age').value) || 0, loc: document.getElementById('location').value, job: document.getElementById('job').value, amea: parseInt(document.getElementById('amea').value) || 0, hasProperty: document.getElementById('hasProperty').checked, hasVehicle: document.getElementById('hasVehicle').checked, isSingleParent: document.getElementById('isSingleParent').checked, isLargeFamily: document.getElementById('isLargeFamily').checked, isMinority: document.getElementById('isMinority').checked };
             const fullList = [...localBenefits, ...window.extraBenefits];
             const eligible = all ? fullList : fullList.filter(b => {
                 if (b.reqGender && user.gender !== b.reqGender) return false;
-                if (b.category === 'family' && user.gender !== 'female' && (b.id==1 || b.id==5 || b.id==16 || b.id==31 || b.id==33)) return false;
-                if (user.age > 52 && (b.id==1 || b.id==5 || b.id==16 || b.id==31 || b.id==33)) return false;
+                if ((b.id==1 || b.id==5 || b.id==16 || b.id==31 || b.id==33) && user.gender !== 'female') return false;
+                if ((b.id==1 || b.id==5 || b.id==16 || b.id==31 || b.id==33) && user.age > 52) return false;
                 if (b.reqLoc && b.reqLoc !== user.loc) return false;
                 if (b.reqJob && b.reqJob !== user.job) return false;
                 if (b.reqAmea && user.amea < b.reqAmea) return false;
@@ -542,7 +478,7 @@
                 const benefitData = JSON.parse(jsonText);
                 if (window.currentUser) { await setDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'extraBenefits', benefitData.id), benefitData); }
                 const container = document.getElementById('chatMessages');
-                container.innerHTML += `<div class="message msg-ai shadow-md border-l-[4px] border-emerald-500 font-bold text-black text-xs">Ανάλυση: ${benefitData.name} προστέθηκε!</div>`;
+                container.innerHTML += `<div class="message-bubble msg-ai shadow-md">Ανάλυση: ${benefitData.name} προστέθηκε!</div>`;
                 container.scrollTop = container.scrollHeight;
                 loader.classList.add('hidden');
                 document.getElementById('reportBenefitName').value = '';
@@ -553,18 +489,25 @@
             const input = document.getElementById('chatInput');
             const text = input.value.trim(); if(!text) return;
             const container = document.getElementById('chatMessages');
-            container.innerHTML += `<div class="message msg-user shadow-sm text-black">${text}</div>`;
+            container.innerHTML += `<div class="message-bubble msg-user">${text}</div>`;
             input.value = ''; container.scrollTop = container.scrollHeight;
-            try {
-                const sys = `Είσαι ο Μπάμπης. Μίλα στον ενικό. 100% Ελληνικά. Βάση: ${JSON.stringify(localBenefits)}.`;
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: text }] }], systemInstruction: { parts: [{ text: sys }] } })
-                });
-                const data = await res.json();
-                const aiMsg = data.candidates?.[0]?.content?.parts?.[0]?.text || "Αδυναμία.";
-                container.innerHTML += `<div class="message msg-ai shadow-md border-l-[4px] border-emerald-500 font-bold text-black">${aiMsg}</div>`;
-            } catch(e) { container.innerHTML += `<div class="message msg-ai text-red-600">Σφάλμα.</div>`; }
+            const callAI = async (retryCount = 0) => {
+                try {
+                    const sys = `Είσαι ο Μπάμπης. Μίλα στον ενικό. Βάση: ${JSON.stringify(localBenefits)}.`;
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: text }] }], systemInstruction: { parts: [{ text: sys }] } })
+                    });
+                    if (!res.ok && retryCount < 5) throw new Error();
+                    const data = await res.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Αδυναμία.";
+                } catch (e) {
+                    if (retryCount < 5) { await new Promise(r => setTimeout(r, Math.pow(2, retryCount)*1000)); return callAI(retryCount + 1); }
+                    return "Πρόβλημα σύνδεσης. Δοκίμασε σε λίγο!";
+                }
+            };
+            const aiMsg = await callAI();
+            container.innerHTML += `<div class="message-bubble msg-ai">${aiMsg}</div>`;
             container.scrollTop = container.scrollHeight;
         };
 
@@ -581,16 +524,10 @@
 
         window.closeModal = () => { document.getElementById('benefitModal').classList.add('hidden'); document.body.style.overflow = 'auto'; };
         window.toggleChat = () => { document.getElementById('babisWidget').classList.toggle('hidden'); };
-        window.toggleDarkMode = () => { 
-            document.body.classList.toggle('dark-mode'); 
-            const circle = document.getElementById('toggleCircle');
-            if(circle) circle.style.left = document.body.classList.contains('dark-mode') ? '22px' : '2px';
-        };
-
+        window.toggleDarkMode = () => { document.body.classList.toggle('dark-mode'); };
         window.onscroll = () => {
             const btn = document.getElementById('scrollTopBtn');
-            if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) { btn.classList.remove('hidden'); } 
-            else { btn.classList.add('hidden'); }
+            if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) { btn.classList.remove('hidden'); } else { btn.classList.add('hidden'); }
         };
 
         window.shareLink = (platform) => {
@@ -599,9 +536,7 @@
             if(platform === 'viber') window.open(`viber://forward?text=${encodeURIComponent(text + " " + url)}`);
             else if(platform === 'whatsapp') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + url)}`);
             else if(platform === 'copy') {
-                const dummy = document.createElement('input'); document.body.appendChild(dummy);
-                dummy.value = url; dummy.select(); document.execCommand('copy');
-                document.body.removeChild(dummy); alert("Το link αντιγράφηκε!");
+                navigator.clipboard.writeText(url); alert("Το link αντιγράφηκε!");
             }
         };
 
